@@ -26,7 +26,7 @@ router.delete('/stores/:id',            auth, storesController.removeStore)
 router.get('/products',                 productsController.getProducts)
 router.post('/products',                auth, productsController.createProduct)
 router.get('/products/:id',             productsController.getProduct)
-router.put('/products/:id',             productsController.updateProduct)
-router.delete('/products/:id',          productsController.deleteProduct)
+router.put('/products/:id',             auth, productsController.updateProduct)
+router.delete('/products/:id',          auth, productsController.deleteProduct)
 
 module.exports = router;
