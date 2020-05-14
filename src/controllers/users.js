@@ -4,17 +4,26 @@ const httpStatus = require('http-status')
 const passport = require('passport');
 
 const register = async (req, res) => {
-    try {
-        let { name, email, password } = req.body;
+    let { name, email, password } = req.body;
+    return createUser(name, email, password, res);
+}
 
+const createUser = async (name, email, password, res) => {
+    try {
         if (!name || !email || !password) {
             return sendJSONResponse(res, 
                 httpStatus.BAD_REQUEST, 
                 { message: 'Nome, email e senha são obrigatórios!'})
         }
 
+        if (await User.isEmailTaken(email)) {
+            return sendJSONResponse(res, 
+                httpStatus.BAD_REQUEST, 
+                { message: 'O email já está sendo usado!'})
+        }
+
         let user = new User({ name, email });
-        user.setPassword(req.body.password);
+        user.setPassword(password);
         await user.save();
 
         let token = await user.generateJwt();
@@ -27,7 +36,10 @@ const register = async (req, res) => {
         }
 
         sendJSONResponse(res, httpStatus.OK, response);
+        
+        return response;
     } catch (err) {
+        console.error(err);
         sendJSONResponse(res, httpStatus.INTERNAL_SERVER_ERROR, 
             { message: `Erro ao criar usuário: ${err.message}`})
     }
@@ -82,8 +94,27 @@ const getUsers = async (req, res) => {
     }
 }
 
+const getUserByEmail = async (email) => {
+    try {
+        let user = await User.findOne({ email });
+        return user;
+    } catch (err) {
+        console.log(`Error getting user: ${err.message}`)
+    }
+}
+
+const setRole = async (userId, role) => {
+    try {
+        await User.updateOne({ _id: userId }, { $set: { role }})
+    } catch (err) {
+        console.log(`Error setting role: ${err.message}`)
+    }
+}
+
 module.exports = {
-    register,
     login,
-    getUsers
+    register,
+    getUsers,
+    setRole,
+    getUserByEmail
 }

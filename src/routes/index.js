@@ -12,16 +12,18 @@ var auth = jwt({
 	userProperty: 'user'
 });
 
-router.get('/', (req, res) => { res.status(200).send({message: 'Im running!'}); });
-
 /**
  * These routes are for debuggin/demostration;
- * In a microservices architecture, the auth could've be done
+ * In a microservices architecture, the auth would've probably been done
  * somewhere else - an independent auth service, for instance.
  */
 router.post('/login',                   usersController.login);
 router.post('/register',                usersController.register);
-router.get('/users',                    usersController.getUsers)
+
+if (process.env.NODE_ENV !== 'production') {
+    router.get('/users',                usersController.getUsers)
+}
+
 
 /**
  * Stores

@@ -17,7 +17,11 @@ const userSchema = new mongoose.Schema({
 	hash: { type: String, select: false },
 	salt: { type: String, select: false },
 
-    role: { type: String, default: 'manager' },
+    role: { 
+        type: String, 
+        enum: ['user', 'manager', 'staff'],
+        default: 'user' 
+    },
 });
 
 userSchema.methods.setPassword = function(password){
@@ -41,6 +45,11 @@ userSchema.methods.generateJwt = async function() {
 	let response = jwt.sign(sign, process.env.JWT_SECRET || 'testsecret' );
 
 	return response;
+};
+
+userSchema.statics.isEmailTaken = async function (email) {
+    const user = await this.findOne({ email });
+    return !!user;
 };
 
 userSchema.statics.findByEmail = function(email, cb) {

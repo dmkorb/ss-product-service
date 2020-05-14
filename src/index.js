@@ -21,6 +21,7 @@ app.use(passport.initialize());
 // passport.use('jwt', jwtStrategy);
 
 app.use('/api', routes);
+app.get('/', (req, res) => res.status(200).send('<H2>Im running!</H2>'));
 
 // catch 404 
 app.use((req, res, next) => {
