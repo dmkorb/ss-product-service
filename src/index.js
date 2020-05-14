@@ -6,10 +6,7 @@ const httpStatus = require('http-status');
 const bodyParser = require('body-parser');
 const { db } = require('./models');
 const routes = require('./routes');
-const { insertMockData } = require('./mock');
 const { passportConfig } = require('./config/passport')
-
-insertMockData();
 
 const app = express();
 

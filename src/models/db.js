@@ -14,9 +14,16 @@ const connection = mongoose.connect(dbURI, {
 });
 
 // CONNECTION EVENTS
-mongoose.connection.on('connected', () => console.log('Mongoose connected to ' + dbURI));
 mongoose.connection.on('error', (err) => console.log('Mongoose connection error: ' + err));
 mongoose.connection.on('disconnected', () => console.log('Mongoose disconnected'));
+mongoose.connection.on('connected', async () => {
+    console.log('Mongoose connected to ' + dbURI);
+
+    if (process.env.NODE_ENV !== 'production') {
+        let mock = await require('../mock');
+        mock.insertMockData();
+    }
+});
 
 // CAPTURE APP TERMINATION / RESTART EVENTS
 // To be called when process is restarted or terminated
