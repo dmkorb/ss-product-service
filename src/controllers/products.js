@@ -7,6 +7,14 @@ const { getProductObject } = require('./products.utils')
 const DEFAULT_OFFSET = 0;
 const DEFAULT_LIMIT = 10;
 
+/**
+ * Returns all the products of the stores the user is responsible for.
+ * If a manager has many stores, all the stores products will be returned.
+ * 
+ * @param {number} offset - Offset to query. Minimum 0.
+ * @param {number} limit - The number of results to be returned. Defaults to 10, max to 100.
+ * @param {string} term - The term fo search for
+ */
 const getProducts = async (req, res) => {
     try {
         let { 
@@ -66,6 +74,16 @@ const getProducts = async (req, res) => {
     }
 }
 
+/**
+ * Creates a new product. 
+ * Can only be done by the store manager or staff.
+ * 
+ * @param {string} name - The name of the product
+ * @param {string} description - The description of the product
+ * @param {string} image_url - The product's image URL
+ * @param {string} store_id - The ID of the store this product is beind added to.
+ * @param {number} price - The product's price, in cents.
+ */
 const createProduct = async (req, res) => {
     try {
         let { name, description, image_url, store_id, price } = req.body;
@@ -106,9 +124,12 @@ const createProduct = async (req, res) => {
             message: `Erro ao criar produto: ${err.message}`
         })
     }
-    
 }
 
+/**
+ * Gets one product. 
+ * Available for unauthorised users.
+ */
 const getProduct = async (req, res) => {
     try {
         let product = await Product.findById(req.params.id)
@@ -127,6 +148,15 @@ const getProduct = async (req, res) => {
     }
 }
 
+/**
+ * Updates the product name, description, image and/or price.
+ * Can only be called by the store manager or staff.
+ * 
+ * @param {string} name - The name of the product
+ * @param {string} description - The description of the product
+ * @param {string} image_url - The product's image URL
+ * @param {number} price - The product's price, in cents.
+ */
 const updateProduct = async (req, res) => {
     try {
         let product = await Product.findById(req.params.id)
@@ -159,6 +189,10 @@ const updateProduct = async (req, res) => {
     }
 }
 
+/**
+ * Deletes a product.
+ * Can only be called by the store manager or staff.
+ */
 const deleteProduct = async (req, res) => {
     try {
         let product = await Product.findById(req.params.id)

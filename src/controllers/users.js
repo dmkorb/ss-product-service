@@ -3,6 +3,13 @@ const { sendJSONResponse } = require('../utils')
 const httpStatus = require('http-status')
 const passport = require('passport');
 
+/**
+ * Creates a new user 
+ * 
+ * @param {string} name
+ * @param {string} email
+ * @param {string} password
+ */
 const register = async (req, res) => {
     let { name, email, password } = req.body;
     return createUser(name, email, password, res);
@@ -45,6 +52,11 @@ const createUser = async (name, email, password, res) => {
     }
 }
 
+/**
+ * Logs the user in, returning a token
+ * @param {string} email
+ * @param {string} password
+ */
 const login = async (req, res) => {
     try {
         let { email, password } = req.body;
@@ -85,6 +97,10 @@ const login = async (req, res) => {
     }
 }
 
+/**
+ * Gets all users.
+ * Only available for testing/debugging, not for production.
+ */
 const getUsers = async (req, res) => {
     try {
         let users = await User.find();
@@ -94,6 +110,10 @@ const getUsers = async (req, res) => {
     }
 }
 
+/**
+ * Returns an user by it's email address
+ * @param {string} email 
+ */
 const getUserByEmail = async (email) => {
     try {
         let user = await User.findOne({ email });
@@ -103,6 +123,12 @@ const getUserByEmail = async (email) => {
     }
 }
 
+/**
+ * Sets a role for a specific user. Used to change user's role 
+ * to manager/staff when it creates a store or is added as staff.
+ * @param {string} userId 
+ * @param {string} role 
+ */
 const setRole = async (userId, role) => {
     try {
         await User.updateOne({ _id: userId }, { $set: { role }})
