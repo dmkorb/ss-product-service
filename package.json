@@ -4,6 +4,7 @@
   "description": "Products micro-service",
   "main": "src/index.js",
   "scripts": {
+    "start": "pm2 start src/index.js --no-daemon",
     "dev": "NODE_ENV=development nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,6 +22,7 @@
     "mongoose": "^5.9.13",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "pm2": "^4.4.0"
   }
 }

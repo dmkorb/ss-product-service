@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 var dbURI = 'mongodb://localhost/ss-product';
-if (process.env.NODE_ENV === 'production') {
+if (process.env.MONGODB_URI) {
     dbURI = process.env.MONGODB_URI;
 }
 

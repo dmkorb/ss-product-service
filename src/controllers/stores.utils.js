@@ -1,7 +1,6 @@
 const { getProductObject } = require('./products.utils')
 
 const getStoreObject = async (store, detailed) => {
-    console.log(store._id, detailed)
     await store.populate('products manager staff').execPopulate();
 
     let products = []
