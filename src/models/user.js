@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
 	hash: { type: String, select: false },
 	salt: { type: String, select: false },
 
-    role: { type: String, default: 'user' },
+    role: { type: String, default: 'manager' },
 });
 
 userSchema.methods.setPassword = function(password){

@@ -73,7 +73,17 @@ const login = async (req, res) => {
     }
 }
 
+const getUsers = async (req, res) => {
+    try {
+        let users = await User.find();
+        sendJSONResponse(res, httpStatus.OK, users)
+    } catch (err) {
+        sendJSONResponse(res, httpStatus.OK, {message: err.message})
+    }
+}
+
 module.exports = {
     register,
     login,
+    getUsers
 }

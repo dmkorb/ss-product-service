@@ -1,11 +1,19 @@
 const { Store } = require('../models')
 const { sendJSONResponse } = require('../utils')
 const httpStatus = require('http-status')
+const { getStoreObject } = require('./stores.utils')
 
 const getStores = async (req, res) => {
     try {
-        let stores = await Store.find();
+        let stores = [],
+            __stores = await Store.find();
+
+        for (s of __stores) {
+            stores.push(await getStoreObject(s))
+        }
+
         let count = stores.length;
+
         sendJSONResponse(res, httpStatus.OK, { count, stores });
     } catch (err) {
         sendJSONResponse(res, httpStatus.INTERNAL_SERVER_ERROR, { 
@@ -27,7 +35,7 @@ const getStoreById = async (storeId, res) => {
             });
         }
         
-        sendJSONResponse(res, httpStatus.OK, store);
+        sendJSONResponse(res, httpStatus.OK, await getStoreObject(store, !!req.user));
         
         return store;
     } catch (err) {
@@ -53,7 +61,7 @@ const createStore = async (req, res) => {
             manager
         });
 
-        sendJSONResponse(res, httpStatus.OK, store);
+        sendJSONResponse(res, httpStatus.OK, await getStoreObject(store, !!req.user));
     } catch (err) {
         sendJSONResponse(res, httpStatus.INTERNAL_SERVER_ERROR, { 
             message: `Erro ao criar loja: ${err.message}` 
@@ -63,7 +71,7 @@ const createStore = async (req, res) => {
 
 const addStaff = async (req, res) => {
     try {
-
+        sendJSONResponse(res, httpStatus.OK, {message: 'TODO'})
     } catch (err) {
         
     }
@@ -71,7 +79,6 @@ const addStaff = async (req, res) => {
 
 const removeStore = async (req, res) => {
     try {
-        console.log(req.params.id)
         let store = await Store.findById(req.params.id); 
         if (!store) {
             return sendJSONResponse(res, httpStatus.NOT_FOUND, { 
@@ -79,7 +86,7 @@ const removeStore = async (req, res) => {
             });
         }
 
-        let isAuthorized = await isUserAuthorized(store._id, req.user._id)
+        let isAuthorized = await isUserAuthorized(store._id, req.user?._id)
         if (!isAuthorized) {
             return sendJSONResponse(res, httpStatus.FORBIDDEN, { 
                 message: 'Usuário não autorizado!' 
@@ -98,6 +105,7 @@ const removeStore = async (req, res) => {
 
 const isUserAuthorized = async (storeId, userId) => {
     try {
+        if (!storeId || !userId) return false;
         let store = await Store.findById(storeId);
         if (!store) return false;
         if (store.manager == userId) return true;
@@ -108,6 +116,20 @@ const isUserAuthorized = async (storeId, userId) => {
     }
 }
 
+const getStoresForUser = async (userId) => {
+    try {
+        let store = await Store.find({
+            $or: [
+                { manager: userId },
+                { staff: {$in: [userId]}}
+            ]
+        })
+        return store;
+    } catch (err) {
+        return null;
+    }
+}
+
 module.exports = {
     getStores, 
     getStore, 
@@ -115,5 +137,6 @@ module.exports = {
     createStore, 
     addStaff,
     removeStore,
-    isUserAuthorized
+    isUserAuthorized,
+    getStoresForUser
 }
