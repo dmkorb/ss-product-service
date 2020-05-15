@@ -31,13 +31,15 @@ const getProducts = async (req, res) => {
         if (isNaN(offset) || offset < 0) offset = 100;
         if (isNaN(limit) || limit < 0 || limit > 100) limit = 100;
 
-        // let's return only products from stores related to that user;
-        // be the user manager, be him staff
-        let stores = await storeController.getStoresForUser(req.user._id)
-        if (stores) {
-            let ids = []
-            stores.forEach(store => ids.push(store._id))
-            queryOptions.store_id = {$in: ids}
+        // if it's an auth call, let's return only products from stores 
+        // related to that user; be the user manager, be him staff
+        if (req.user) {
+            let stores = await storeController.getStoresForUser(req.user._id)
+            if (stores) {
+                let ids = []
+                stores.forEach(store => ids.push(store._id))
+                queryOptions.store_id = {$in: ids}
+            }
         }
         
         // the term to search for products
@@ -118,7 +120,7 @@ const createProduct = async (req, res) => {
             created_by: req.user._id
         })
 
-        sendJSONResponse(res, httpStatus.OK, await getProductObject(product, !!req.user))
+        sendJSONResponse(res, httpStatus.CREATED, await getProductObject(product, !!req.user))
     } catch (err) {
         sendJSONResponse(res, httpStatus.INTERNAL_SERVER_ERROR, { 
             message: `Erro ao criar produto: ${err.message}`

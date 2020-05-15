@@ -42,7 +42,7 @@ const createUser = async (name, email, password, res) => {
             token
         }
 
-        sendJSONResponse(res, httpStatus.OK, response);
+        sendJSONResponse(res, httpStatus.CREATED, response);
         
         return response;
     } catch (err) {

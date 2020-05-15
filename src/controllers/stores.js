@@ -82,7 +82,7 @@ const createStore = async (req, res) => {
 
         await usersController.setRole(req.user._id, 'manager');
 
-        sendJSONResponse(res, httpStatus.OK, await getStoreObject(store, !!req.user));
+        sendJSONResponse(res, httpStatus.CREATED, await getStoreObject(store, !!req.user));
     } catch (err) {
         sendJSONResponse(res, httpStatus.INTERNAL_SERVER_ERROR, { 
             message: `Erro ao criar loja: ${err.message}` 
