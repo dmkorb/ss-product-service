@@ -23,7 +23,7 @@ yarn install
 
 ``` bash
 # Com docker:
-$ docker-compose build
+$ docker-compose up
 
 # com yarn
 $ yarn start
