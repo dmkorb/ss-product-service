@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { Store } = require('../models')
 const { sendJSONResponse } = require('../utils')
 const httpStatus = require('http-status')
@@ -54,6 +55,9 @@ const getStoreById = async (storeId, user, res) => {
         
         return store;
     } catch (err) {
+        if (err instanceof mongoose.Error.CastError)
+            return sendJSONResponse(res, httpStatus.NOT_FOUND, { message: `ID inválido!` });
+
         sendJSONResponse(res, httpStatus.INTERNAL_SERVER_ERROR, { 
             message: `Erro ao buscar loja: ${err.message}` 
         });
@@ -72,7 +76,7 @@ const createStore = async (req, res) => {
         let { _id: manager } = req.user;
 
         if (!name) {
-            return sendJSONResponse(res, httpStatus.INVALID_REQUEST, { 
+            return sendJSONResponse(res, httpStatus.BAD_REQUEST, { 
                 message: 'O nome é obrigatório!' 
             });
         }
@@ -148,6 +152,9 @@ const addStaff = async (req, res) => {
 
         sendJSONResponse(res, httpStatus.OK, await getStoreObject(store, !!req.user))
     } catch (err) {
+        if (err instanceof mongoose.Error.CastError)
+            return sendJSONResponse(res, httpStatus.NOT_FOUND, { message: `ID inválido!` });
+
         sendJSONResponse(res, httpStatus.INTERNAL_SERVER_ERROR, { 
             message: `Erro ao adicionar staff: ${err.message}` 
         });
@@ -178,6 +185,9 @@ const removeStore = async (req, res) => {
         
         sendJSONResponse(res, httpStatus.OK, { message: `Loja ${store.name} removida!`})
     } catch (err) {
+        if (err instanceof mongoose.Error.CastError)
+            return sendJSONResponse(res, httpStatus.NOT_FOUND, { message: `ID inválido!` });
+            
         sendJSONResponse(res, httpStatus.INTERNAL_SERVER_ERROR, { 
             message: `Erro ao remover a loja: ${err.message}` 
         });

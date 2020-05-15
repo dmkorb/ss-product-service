@@ -19,7 +19,7 @@ mongoose.connection.on('disconnected', () => console.log('Mongoose disconnected'
 mongoose.connection.on('connected', async () => {
     console.log('Mongoose connected to ' + dbURI);
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
         let mock = await require('../mock');
         mock.insertMockData();
     }
