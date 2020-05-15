@@ -1,34 +1,15 @@
 const mongoose = require('mongoose');
 const { User } = require('../src/models')
 
-
-
+// ignore console.log when testing
 global.console = {
-    log: jest.fn(), // console.log are ignored in tests
-  
-    // Keep native behaviour for other methods, use those to print out things in your own tests, not `console.log`
+    log: jest.fn(), 
     error: jest.fn(),
     warn: jest.fn(),
     info: jest.fn(),
     debug: jest.fn(),
 };
 
-const setupTestDB = () => {
-  beforeAll(async () => {
-    await mongoose.connect('mongodb://localhost/ss-product-test', { 
-        useUnifiedTopology: true,
-        useNewUrlParser: true
-    });
-    // await Promise.all(Object.values(mongoose.connection.collections).map(async (collection) => collection.deleteMany()));
-  });
-
-  afterAll(async () => {
-    await Promise.all(Object.values(mongoose.connection.collections).map(async (collection) => collection.deleteMany()));
-    await mongoose.disconnect();
-  });
-};
-
-// let userToken
 let manager1 = { 
     name: 'test user', 
     email: 'test@example.com',
@@ -47,36 +28,57 @@ let user1 = {
     password: '123456'
 }
 
-const getManagerToken = async () => {
-    if (manager1.token) return manager1.token;
+const setupTestDB = () => {
+  beforeAll(async () => {
+    await mongoose.connect('mongodb://localhost/ss-product-test', { 
+        useUnifiedTopology: true,
+        useNewUrlParser: true
+    });
 
-    let user = await User.create(manager1);
-    user.setPassword(manager1.password);
-    await user.save();
+    //create manager
+    let manager = await User.create(manager1);
+    manager.setPassword(manager1.password);
+    await manager.save();
 
-    manager1.token = await user.generateJwt();
-    return manager1.token;
-}
+    manager1._id = manager._id;
+    manager1.token = await manager.generateJwt();
 
-const getStaffToken = async () => {
-    if (staff1.token) return staff1.token;
+    // create staff
+    let staff = await User.create(staff1);
+    staff.setPassword(staff1.password);
+    await staff.save();
 
-    let user = await User.create(staff1);
-    user.setPassword(staff1.password);
-    await user.save();
+    staff1._id = staff._id;
+    staff1.token = await staff.generateJwt();
 
-    staff1.token = await user.generateJwt();
-    return staff1.token;
-}
-
-const getUserToken = async () => {
-    if (user1.token) return user1.token;
-    
+    // create user
     let user = await User.create(user1);
     user.setPassword(user1.password);
     await user.save();
 
+    user1._id = user._id
     user1.token = await user.generateJwt();
+
+    // await Promise.all(Object.values(mongoose.connection.collections).map(async (collection) => collection.deleteMany()));
+  });
+
+  afterAll(async (done) => {
+    await Promise.all(Object.values(mongoose.connection.collections).map(async (collection) => collection.deleteMany()));
+    await mongoose.disconnect();
+    done();
+
+  });
+};
+
+const getManagerToken = async () => {
+    return manager1.token;
+}
+
+const getStaffToken = async () => {
+    return staff1.token;
+}
+
+const getUserToken = async () => {
     return user1.token;
 }
 
@@ -84,5 +86,8 @@ module.exports = {
     setupTestDB,
     getManagerToken,
     getStaffToken,
-    getUserToken
+    getUserToken,
+    getManager: () => manager1,
+    getStaff: () => staff1,
+    getUser: () => user1
 };

@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { Product } = require('../models')
 const { sendJSONResponse } = require('../utils')
 const httpStatus = require('http-status');
@@ -142,10 +143,13 @@ const getProduct = async (req, res) => {
             })
         }
 
-        let authorized = (req.user && await isUserAuthorized(product.store_id, req.user._id))
+        let authorized = (req.user && await storeController.isUserAuthorized(product.store_id, req.user._id))
 
         sendJSONResponse(res, httpStatus.OK, await getProductObject(product, authorized))
     } catch (err) {
+        if (err instanceof mongoose.Error.CastError)
+            return sendJSONResponse(res, httpStatus.NOT_FOUND, { message: `ID inválido!` });
+
         sendJSONResponse(res, httpStatus.INTERNAL_SERVER_ERROR, { 
             message: `Erro ao buscar um produto: ${err.message}`
         })
@@ -187,6 +191,9 @@ const updateProduct = async (req, res) => {
 
         sendJSONResponse(res, httpStatus.OK, await getProductObject(product, !!req.user))
     } catch (err) {
+        if (err instanceof mongoose.Error.CastError)
+            return sendJSONResponse(res, httpStatus.NOT_FOUND, { message: `ID inválido!` });
+
         sendJSONResponse(res, httpStatus.INTERNAL_SERVER_ERROR, { 
             message: `Erro ao atualizar produto: ${err.message}`
         })
@@ -217,6 +224,9 @@ const deleteProduct = async (req, res) => {
 
         sendJSONResponse(res, httpStatus.OK, { message: `Produto ${product.name} removido!`})
     } catch (err) {
+        if (err instanceof mongoose.Error.CastError)
+            return sendJSONResponse(res, httpStatus.NOT_FOUND, { message: `ID inválido!` });
+
         sendJSONResponse(res, httpStatus.INTERNAL_SERVER_ERROR, { 
             message: `Erro ao remover o produto: ${err.message}`
         })
