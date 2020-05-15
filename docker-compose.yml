@@ -10,6 +10,6 @@ services:
       .
     environment:
       - NODE_ENV=staging
-      - MONGODB_URI=mongodb://mongo/ss-product-stg
+      - MONGODB_URI=mongodb://mongo/ss-products
     ports:
       - 3000:3000
