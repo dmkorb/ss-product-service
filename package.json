@@ -4,7 +4,8 @@
   "description": "Products micro-service",
   "main": "src/index.js",
   "scripts": {
-    "start": "pm2 start src/index.js --no-daemon",
+    "start": "node src/index.js",
+    "start:local": "pm2 start src/index.js --no-daemon",
     "dev": "NODE_ENV=development nodemon src/index.js",
     "test": "jest -i --detectOpenHandles --forceExit"
   },
@@ -28,5 +29,8 @@
     "passport-local": "^1.0.0",
     "pm2": "^4.4.0",
     "supertest": "^4.0.2"
+  },
+  "engines": {
+    "node": "14.x"
   }
 }
