@@ -142,12 +142,12 @@ const getProduct = async (req, res) => {
             })
         }
 
-        let authorized = (user && await isUserAuthorized(product.store_id, user._id))
+        let authorized = (req.user && await isUserAuthorized(product.store_id, req.user._id))
 
         sendJSONResponse(res, httpStatus.OK, await getProductObject(product, authorized))
     } catch (err) {
         sendJSONResponse(res, httpStatus.INTERNAL_SERVER_ERROR, { 
-            message: `Erro ao criar produto: ${err.message}`
+            message: `Erro ao buscar um produto: ${err.message}`
         })
     }
 }

@@ -1,6 +1,6 @@
 const request = require('supertest');
 const httpStatus = require('http-status')
-const app = require('../src/index');
+const app = require('../src/app');
 const { User, Store } = require('../src/models')
 const { 
     setupTestDB, 
