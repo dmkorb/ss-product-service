@@ -4,13 +4,16 @@ const cors = require('cors');
 const passport = require('passport');
 const httpStatus = require('http-status');
 const bodyParser = require('body-parser');
+const logger = require('morgan');
 const { db } = require('./models');
 const routes = require('./routes');
 const { passportConfig } = require('./config/passport')
 
 const app = express();
 
+
 app.use(helmet())
+app.use(logger('dev'))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -55,3 +58,5 @@ const unexpectedErrorHandler = (error) => {
 
 process.on('uncaughtException', unexpectedErrorHandler);
 process.on('unhandledRejection', unexpectedErrorHandler);
+
+module.exports = app;
