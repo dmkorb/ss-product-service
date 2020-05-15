@@ -11,9 +11,11 @@ const { passportConfig } = require('./config/passport')
 
 const app = express();
 
+if (process.env.NODE_ENV !== 'test') {
+    app.use(logger('dev'))
+}
 
 app.use(helmet())
-app.use(logger('dev'))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -21,7 +23,6 @@ app.use(cors());
 app.options('*', cors());
 
 app.use(passport.initialize());
-// passport.use('jwt', jwtStrategy);
 
 app.use('/api', routes);
 app.get('/', (req, res) => res.status(200).send('<H2>Im running!</H2>'));
