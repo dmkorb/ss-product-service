@@ -6,7 +6,7 @@
   "scripts": {
     "start": "pm2 start src/index.js --no-daemon",
     "dev": "NODE_ENV=development nodemon src/index.js",
-    "test": "jest -i --detectOpenHandles"
+    "test": "jest -i --detectOpenHandles --forceExit"
   },
   "author": "",
   "license": "ISC",

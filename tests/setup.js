@@ -29,7 +29,7 @@ let user1 = {
 }
 
 const setupTestDB = () => {
-  beforeAll(async () => {
+  beforeAll(async (done) => {
     await mongoose.connect('mongodb://localhost/ss-product-test', { 
         useUnifiedTopology: true,
         useNewUrlParser: true
@@ -59,26 +59,26 @@ const setupTestDB = () => {
     user1._id = user._id
     user1.token = await user.generateJwt();
 
+    done()
     // await Promise.all(Object.values(mongoose.connection.collections).map(async (collection) => collection.deleteMany()));
   });
 
   afterAll(async (done) => {
     await Promise.all(Object.values(mongoose.connection.collections).map(async (collection) => collection.deleteMany()));
-    await mongoose.disconnect();
+    await mongoose.connection.close()
     done();
-
   });
 };
 
-const getManagerToken = async () => {
+const getManagerToken = () => {
     return manager1.token;
 }
 
-const getStaffToken = async () => {
+const getStaffToken = () => {
     return staff1.token;
 }
 
-const getUserToken = async () => {
+const getUserToken = () => {
     return user1.token;
 }
 
