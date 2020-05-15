@@ -1,16 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('express-jwt');
+const secret = require('../config').secret;
 const { 
     usersController,
     storesController,
     productsController
  } = require('../controllers')
 
-var auth = jwt({
-	secret: process.env.JWT_SECRET || 'testsecret',
-	userProperty: 'user'
-});
+const auth = {
+    required: jwt({
+        secret,
+        userProperty: 'user'
+    }),
+    optional: jwt({
+        secret,
+        userProperty: 'user',
+        credentialsRequired: false,
+    })
+}
 
 /**
  * These routes are for debuggin/demostration;
@@ -28,18 +36,18 @@ if (process.env.NODE_ENV !== 'production') {
 /**
  * Stores
  */
-router.get('/stores',                   storesController.getStores);
-router.post('/stores',                  auth, storesController.createStore)
-router.post('/stores/:id/add-staff',    auth, storesController.addStaff)
-router.delete('/stores/:id',            auth, storesController.removeStore)
+router.get('/stores',                   auth.optional, storesController.getStores);
+router.post('/stores',                  auth.required, storesController.createStore)
+router.post('/stores/:id/add-staff',    auth.required, storesController.addStaff)
+router.delete('/stores/:id',            auth.required, storesController.removeStore)
 
 /**
  * Products
  */
-router.get('/products',                 auth, productsController.getProducts)
-router.post('/products',                auth, productsController.createProduct)
-router.get('/products/:id',             productsController.getProduct)
-router.put('/products/:id',             auth, productsController.updateProduct)
-router.delete('/products/:id',          auth, productsController.deleteProduct)
+router.get('/products',                 auth.optional, productsController.getProducts)
+router.post('/products',                auth.required, productsController.createProduct)
+router.get('/products/:id',             auth.optional, productsController.getProduct)
+router.put('/products/:id',             auth.required, productsController.updateProduct)
+router.delete('/products/:id',          auth.required, productsController.deleteProduct)
 
 module.exports = router;
