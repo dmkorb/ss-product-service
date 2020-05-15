@@ -142,7 +142,9 @@ const getProduct = async (req, res) => {
             })
         }
 
-        sendJSONResponse(res, httpStatus.OK, await getProductObject(product, !!req.user))
+        let authorized = (user && await isUserAuthorized(product.store_id, user._id))
+
+        sendJSONResponse(res, httpStatus.OK, await getProductObject(product, authorized))
     } catch (err) {
         sendJSONResponse(res, httpStatus.INTERNAL_SERVER_ERROR, { 
             message: `Erro ao criar produto: ${err.message}`

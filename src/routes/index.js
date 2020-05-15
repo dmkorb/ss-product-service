@@ -21,6 +21,12 @@ const auth = {
 }
 
 /**
+ * API reference:
+ * https://documenter.getpostman.com/view/2773219/Szmk1Fi4?version=latest
+ */
+
+ 
+/**
  * These routes are for debuggin/demostration;
  * In a microservices architecture, the auth would've probably been done
  * somewhere else - an independent auth service, for instance.
@@ -38,6 +44,7 @@ if (process.env.NODE_ENV !== 'production') {
  */
 router.get('/stores',                   auth.optional, storesController.getStores);
 router.post('/stores',                  auth.required, storesController.createStore)
+router.get('/stores/:id',               auth.optional, storesController.getStore);
 router.post('/stores/:id/add-staff',    auth.required, storesController.addStaff)
 router.delete('/stores/:id',            auth.required, storesController.removeStore)
 

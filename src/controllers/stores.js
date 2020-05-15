@@ -30,7 +30,7 @@ const getStores = async (req, res) => {
  * Gets a store, by the ID in the endpoint param.
  */
 const getStore = async (req, res) => {
-    return getStoreById(req.params.id, res)
+    return getStoreById(req.params.id, req.user, res)
 }
 
 /**
@@ -39,7 +39,7 @@ const getStore = async (req, res) => {
  * 
  * @param {string} storeId - The store ID
  */
-const getStoreById = async (storeId, res) => {
+const getStoreById = async (storeId, user, res) => {
     try {
         let store = await Store.findById(storeId);
         if (!store) {
@@ -47,8 +47,10 @@ const getStoreById = async (storeId, res) => {
                 message: 'Loja não encontrada' 
             });
         }
-        
-        sendJSONResponse(res, httpStatus.OK, await getStoreObject(store, !!req.user));
+
+        let authorized = (user && await isUserAuthorized(store._id, user._id))
+
+        sendJSONResponse(res, httpStatus.OK, await getStoreObject(store, authorized));
         
         return store;
     } catch (err) {
